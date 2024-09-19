@@ -23,10 +23,11 @@ const getParent = async (
 ) => {
   const block = await logseq.Editor.getBlock(blockId);
   const maxLength = logseq.settings?.maxLength || 50;
-  const isEllipsis = (block?.content?.length ?? 0) > maxLength;
+  const blockContent = block?.content.split('\n')[0]
+  const isEllipsis = (blockContent?.length ?? 0) > maxLength;
   const content = isEllipsis
-    ? `${block?.content?.slice(0, maxLength)}...`
-    : block?.content || "";
+    ? `${blockContent?.slice(0, maxLength)}...`
+    : blockContent || "";
 
   if (level === 0 && !content) {
     removeBreadcrumb();
@@ -34,7 +35,7 @@ const getParent = async (
   }
 
   const span = document.createElement("span");
-  span.innerHTML = level === 0 ? content : `${content} <span style="opacity: 0.6"> > </span> `;
+  span.innerText = level === 0 ? content : `${content} ➡️ `;
   node.insertBefore(span, node.firstChild);
   span.addEventListener("click", async () => {
     if (!page?.name || !block?.uuid) return;
